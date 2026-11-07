@@ -23,7 +23,11 @@ uv sync
 uv run jupyter lab ms2_data.ipynb
 ```
 
-Run all cells using the Python kernel from this repository’s `.venv`. In VS Code, choose that environment in the notebook’s kernel picker. `uv sync` uses Python 3.12 via `.python-version`. Run it again after updating the repository to pick up lockfile changes.
+`uv sync` creates a `.venv` folder with the exact package versions listed in `uv.lock` (Python 3.12), so everyone works in the same environment. The `.venv` folder is ignored by git. In VS Code, select it with **Python: Select Interpreter** (or the kernel picker in a notebook) and choose `.venv`.
+
+- **After a `git pull`:** run `uv sync` again to pick up any dependency changes.
+- **Adding a package:** run `uv add <package>`, then commit both `pyproject.toml` and `uv.lock`.
+- **Running things from the terminal:** prefix commands with `uv run`, for example `uv run jupyter lab`.
 
 ## Explore the prepared data
 
@@ -49,7 +53,7 @@ uv run --extra preprocessing python -m eeg_pipeline download
 uv run --extra preprocessing python -m eeg_pipeline build
 ```
 
-The default input is `Data/on003570` and the default build destination is `results`. If you already have the release, point `build` at the directory containing `participants.tsv` and the `sub-*` folders. `download` uses the same `--data-dir` option and verifies files already there. Replace the example path with your own.
+The default input is `Data/on003570` and the default build destination is `results`. The `Data` folder is ignored by git, so the raw recordings never get committed. If you already have the release, point `build` at the directory containing `participants.tsv` and the `sub-*` folders. `download` uses the same `--data-dir` option and verifies files already there. Replace the example path with your own.
 
 ```text
 uv run --extra preprocessing python -m eeg_pipeline build --data-dir "path/to/on003570"
@@ -62,8 +66,6 @@ uv run --extra preprocessing python -m eeg_pipeline download --subjects sub-002
 uv run --extra preprocessing python -m eeg_pipeline build --subjects sub-002 --output-dir Data/sub-002-results
 ```
 
-A rerun reuses successful participant outputs when the pinned inputs, pipeline code, settings, and runtime match. Keep the raw directory and the build cache in place to resume interrupted work. Local validation uses macOS. The lockfile covers macOS, Linux x64, and Windows x64. Native Windows runtime validation is pending.
-
-If a build reports an existing `.build.lock`, another build may still be running. Normal completion and Ctrl-C remove this lock. After a crash or forced termination, check that the process ID recorded inside the file is no longer running before removing the stale lock and restarting. Never remove the lock from an active build.
+Rerunning `build` skips participants that already finished, so an interrupted build can be restarted.
 
 The source release is CC0. Cite the [dataset](https://doi.org/10.82901/nemar.on003570) and the [original EEG paper](https://doi.org/10.1016/j.neuroimage.2021.118458) when using these data.
