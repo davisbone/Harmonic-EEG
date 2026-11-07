@@ -31,7 +31,7 @@ uv run jupyter lab ms2_data.ipynb
 
 ## Explore the prepared data
 
-**Can early scalp EEG distinguish a standard middle chord from either kind of deviant in a three-chord progression?** This CS1090A Group 18 milestone prepares and describes an event-level table for that offline classification question. Each retained event has 21 EEG voltage features. The binary label pools the two deviant types, which remain identifiable in the `condition` column.
+**Can 21 early EEG voltage features tell standard from deviant middle chords in participants the model was not trained on?** This CS1090A Group 18 milestone prepares and describes an event-level table for that offline classification question. Each retained event has 21 EEG voltage features. The binary label pools the two deviant types, which remain identifiable in the `condition` column.
 
 The notebook reads the bundled `results/` files and runs without a raw-data download or the optional preprocessing packages. It shows the current cohort, table schema, class balance, trial exclusions, and a worked voltage-feature example. The [visual walkthrough](docs/explainer.html) opens locally in a browser. The [methods](docs/methods.md) specify the pipeline, field roles, and interpretation limits.
 
