@@ -17,5 +17,7 @@ jobs:
       - run: uv sync --locked
       - name: Run the notebook without preprocessing dependencies
         run: uv run --locked jupyter nbconvert --to notebook --execute ms2_data.ipynb --output executed.ipynb --output-dir .validation --ExecutePreprocessor.timeout=180
+      - name: Regenerate the visual walkthrough without preprocessing dependencies
+        run: uv run --locked python -m eeg_pipeline.explain
       - run: uv sync --locked --extra preprocessing
       - run: uv run --locked --extra preprocessing python -m pytest tests -q

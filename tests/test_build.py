@@ -79,8 +79,23 @@ def test_all_excluded_build_publishes_accounting(tmp_path, severely_truncated):
     provenance = json.loads((tmp_path / "provenance.json").read_text(encoding="utf-8"))
     assert provenance["included_events"] == 0
     assert "example.npz" not in provenance["files"]
+    assert b"\r\n" not in (tmp_path / "participant_audit.csv").read_bytes()
+    assert b"\r\n" not in (tmp_path / "provenance.json").read_bytes()
     for name, checksum in provenance["files"].items():
         assert pipeline.file_checksum(tmp_path / name, "sha256") == checksum
+
+
+def test_explainer_regenerates_from_verified_outputs(tmp_path):
+    from eeg_pipeline.explain import build_explainer
+
+    output = tmp_path / "explainer.html"
+    build_explainer(output)
+    raw_bytes = output.read_bytes()
+    assert b"\r\n" not in raw_bytes
+    text = raw_bytes.decode("utf-8")
+    assert "{{" not in text
+    assert "3,772" in text and "770" in text
+    assert "Faller et al. (2021)" in text
 
 
 def test_interrupted_publication_cannot_leave_old_provenance(tmp_path, severely_truncated, monkeypatch):

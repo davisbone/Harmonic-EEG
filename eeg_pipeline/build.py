@@ -76,11 +76,14 @@ def _save_cache(directory, features, ledger, qc, example, identity):
     try:
         features.to_parquet(temporary / "features.parquet", index=False)
         ledger.to_parquet(temporary / "ledger.parquet", index=False)
-        (temporary / "qc.json").write_text(json.dumps(qc, indent=2), encoding="utf-8")
+        (temporary / "qc.json").write_text(json.dumps(qc, indent=2), encoding="utf-8", newline="\n")
         np.savez_compressed(temporary / "example.npz", **example)
         hashes = {p.name: file_checksum(p, "sha256") for p in temporary.iterdir()}
         (temporary / "complete.json").write_text(
-            json.dumps({"identity": identity, "files": hashes}, indent=2), encoding="utf-8")
+            json.dumps({"identity": identity, "files": hashes}, indent=2),
+            encoding="utf-8",
+            newline="\n",
+        )
         temporary.replace(directory)
     finally:
         if temporary.exists():
@@ -116,7 +119,7 @@ def build(data_dir, output_dir, subjects=None):
     output_dir.mkdir(parents=True, exist_ok=True)
     lock = output_dir / ".build.lock"
     try:
-        stream = lock.open("x", encoding="utf-8")
+        stream = lock.open("x", encoding="utf-8", newline="\n")
     except FileExistsError as exc:
         raise RuntimeError(f"Build lock exists: {lock}") from exc
     try:
@@ -189,9 +192,19 @@ def _build(data_dir, output_dir, subjects):
     staging = Path(tempfile.mkdtemp(prefix=".publish-", dir=output_dir))
     try:
         features.to_parquet(staging / "events.parquet", index=False)
-        ledger.to_csv(staging / "event_ledger.csv.gz", index=False,
-                      compression={"method": "gzip", "mtime": 0})
-        participant_audit.to_csv(staging / "participant_audit.csv", index=False)
+        ledger.to_csv(
+            staging / "event_ledger.csv.gz",
+            index=False,
+            encoding="utf-8",
+            lineterminator="\n",
+            compression={"method": "gzip", "mtime": 0},
+        )
+        participant_audit.to_csv(
+            staging / "participant_audit.csv",
+            index=False,
+            encoding="utf-8",
+            lineterminator="\n",
+        )
         if example_path:
             shutil.copyfile(example_path, staging / "example.npz")
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -208,7 +221,9 @@ def _build(data_dir, output_dir, subjects):
             "included_participants": features.subject.nunique(),
             "files": {p.name: file_checksum(p, "sha256") for p in staging.iterdir()},
         }
-        (staging / "provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf-8")
+        (staging / "provenance.json").write_text(
+            json.dumps(provenance, indent=2), encoding="utf-8", newline="\n"
+        )
         # A generation is valid only when the provenance marker and its hashes agree.
         (output_dir / "provenance.json").unlink(missing_ok=True)
         if example_path is None:
