@@ -108,8 +108,8 @@ def test_retention_uses_source_and_edge_eligible_denominator(monkeypatch):
                                        "filter_edge_guard", "source_unavailable"]
     assert features.event_id.tolist() == ["b", "c"]
     assert features.columns.tolist() == trials.columns.tolist() + PREDICTORS
-    assert example["event_ids"].tolist() == ["b"]
-    assert example["baseline_corrected_uv"].shape == (1, 64, 128)
+    assert example["event_ids"][0] == "b"
+    assert example["baseline_corrected_uv"].shape[1:] == (64, 128)
 
 
 def test_unassessed_trials_retain_source_edge_and_participant_reasons(monkeypatch):

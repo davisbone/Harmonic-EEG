@@ -181,7 +181,7 @@ def _retention(signal_pass, boundary_eligible):
 
 
 def _examples(raw, bounds, ledger, epochs, offsets, previews):
-    # Show a retained trial if one exists and a few fixed ICA diagnostic trials.
+    # Include a retained trial and condition-blind ICA diagnostic trials.
     rows = ledger.index[ledger.boundary_eligible]
     kept = ledger.index[ledger.included]
     selected = list(dict.fromkeys([*kept[:1], *previews]))
@@ -247,15 +247,19 @@ def process_subject(raw, trials, blocks):
             summary.update(report)
             for number, block in enumerate(down, start=1):
                 rows = eligible[ledger.loc[eligible, "block"] == number]
-                if len(rows) and len(previews) < 4:
-                    before = _extract(block, centers[rows[:1]], offsets)[0]
-                else:
-                    before = None
+                preview_rows = []
+                if len(rows):
+                    before = _extract(block, centers[rows], offsets)
+                    # First and highest-amplitude eligible event in every block.
+                    # This exposes difficult corrections rather than only quiet examples.
+                    worst = int(np.ptp(before, axis=2).max(axis=1).argmax())
+                    preview_rows = list(dict.fromkeys([rows[0], rows[worst]]))
+                    before = before[rows.get_indexer(preview_rows)].copy()
                 if ica.exclude:
                     ica.apply(block, verbose=False)
-                if before is not None:
-                    after = _extract(block, centers[rows[:1]], offsets)[0]
-                    previews[rows[0]] = (before, after)
+                if preview_rows:
+                    after = _extract(block, centers[preview_rows], offsets)
+                    previews.update({row: (pre, post) for row, pre, post in zip(preview_rows, before, after)})
                 block.filter(**LP, verbose=False)
                 epochs[eligible.get_indexer(rows)] = _extract(block, centers[rows], offsets)
             del down

@@ -8,8 +8,10 @@ def main():
     parser.add_argument("command", choices=["download", "audit", "build"])
     parser.add_argument("--data-dir", type=Path, default=Path("Data/on003570"))
     parser.add_argument("--subjects", nargs="+", help="For example: sub-002 sub-009")
-    parser.add_argument("--output-dir", type=Path, default=Path("data/processed"))
+    parser.add_argument("--output-dir", type=Path, help="Build destination (default: results)")
     args = parser.parse_args()
+    if args.command == "build" and args.subjects and args.output_dir is None:
+        parser.error("A participant subset needs --output-dir to keep it separate from the full table")
 
     if args.command == "download":
         from .source import download
@@ -21,7 +23,7 @@ def main():
         print(f"{len(events):,} candidate stimulus events")
     else:
         from .build import build
-        build(args.data_dir, args.output_dir, args.subjects)
+        build(args.data_dir, args.output_dir or Path("results"), args.subjects)
 
 
 if __name__ == "__main__":

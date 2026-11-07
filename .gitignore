@@ -1,7 +1,9 @@
 # "Data" Folder
 Data/
-data/processed/.cache/
-data/processed/.partial/
+results/.cache/
+results/.publish-*/
+results/.build.lock
+.validation/
 
 # Mac .DS_Store
 .DS_Store
