@@ -1,5 +1,7 @@
 # Harmonic-EEG
 
+**[Open the visual walkthrough in your browser](https://html-preview.github.io/?url=https://github.com/davisbone/Harmonic-EEG/blob/main/docs/explainer.html)** (works on phones)
+
 ## Set up the environment
 
 From a terminal, check for `uv` with `uv --version`. If you need to install it, use the command for your operating system and then open a new terminal. [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)

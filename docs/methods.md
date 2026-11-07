@@ -1,6 +1,6 @@
 # Methods
 
-This is the technical companion to the [visual walkthrough](explainer.html) and [MS2 notebook](../ms2_data.ipynb). It explains the measurements, the choices behind the pipeline, the exact processing recipe, and the limits of the resulting table. The [README](../README.md) is the shortest route to running it.
+This is the technical companion to the [visual walkthrough](https://html-preview.github.io/?url=https://github.com/davisbone/Harmonic-EEG/blob/main/docs/explainer.html) and [MS2 notebook](../ms2_data.ipynb). It explains the measurements, the choices behind the pipeline, the exact processing recipe, and the limits of the resulting table. The [README](../README.md) is the shortest route to running it.
 
 ## Concepts and the data path
 
