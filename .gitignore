@@ -1,5 +1,7 @@
 # "Data" Folder
 Data/
+data/processed/.cache/
+data/processed/.partial/
 
 # Mac .DS_Store
 .DS_Store

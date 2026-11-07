@@ -1,7 +1,7 @@
 [project]
 name = "harmonic-eeg"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "itables>=2.9.1",
     "jupyter>=1.1",
@@ -11,8 +11,29 @@ dependencies = [
     "nbformat>=5",
     "numpy>=2.3",
     "pandas>=3",
+    "pyarrow>=21",
     "scikit-learn>=1.7",
     "scipy>=1.16",
     "seaborn>=0.13.2",
     "statsmodels>=0.14.5,<0.15",
+]
+
+[project.optional-dependencies]
+preprocessing = [
+    "mne>=1.11,<2",
+    "mne-icalabel[onnx]>=0.8,<1",
+    "pyprep>=0.5,<1",
+    "python-picard>=0.8,<1",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+# Require wheels for teammates' common platforms, including Intel Macs.
+[tool.uv]
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
