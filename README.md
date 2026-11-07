@@ -1,6 +1,6 @@
 # Harmonic-EEG
 
-**[Open the visual walkthrough in your browser](https://html-preview.github.io/?url=https://github.com/davisbone/Harmonic-EEG/blob/main/docs/explainer.html)** (works on phones)
+**[Open the visual walkthrough in your browser](https://html-preview.github.io/?url=https://github.com/davisbone/Harmonic-EEG/blob/ms2-full-draft/docs/explainer.html)** (works on phones)
 
 ## Set up the environment
 
