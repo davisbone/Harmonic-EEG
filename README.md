@@ -43,6 +43,8 @@ uv run jupyter lab ms2_data.ipynb
 | `results/example.npz` | A small set of waveform traces for the worked example |
 | `results/provenance.json` | Dataset version, runtime, settings, predictor names, cohort counts, and output hashes |
 
+To regenerate the visual guide from the bundled results, run `uv run python -m eeg_pipeline.explain`.
+
 ## Rebuild from raw EEG
 
 Use the pinned NEMAR `on003570` v1.0.0 release. The rebuild manifest covers about 39 GB of inputs. Reserve time for downloading, checksum validation, and sequential CPU processing. A full build can take hours. The notebook quickstart uses the prepared files above. [NEMAR dataset record](https://nemar.org/dataset/on003570)
@@ -66,6 +68,6 @@ uv run --extra preprocessing python -m eeg_pipeline download --subjects sub-002
 uv run --extra preprocessing python -m eeg_pipeline build --subjects sub-002 --output-dir Data/sub-002-results
 ```
 
-Rerunning `build` skips participants that already finished, so an interrupted build can be restarted.
+Rerunning `build` reuses completed participants when the inputs, processing code and runtime still match. See the [reproduction notes](docs/methods.md#reproduction-and-inspection) if a crash leaves a build lock behind.
 
 The source release is CC0. Cite the [dataset](https://doi.org/10.82901/nemar.on003570) and the [original EEG paper](https://doi.org/10.1016/j.neuroimage.2021.118458) when using these data.
