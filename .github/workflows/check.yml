@@ -1,4 +1,4 @@
-name: Notebook and pipeline checks
+name: Notebook check
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
@@ -15,9 +15,5 @@ jobs:
         with:
           version: "0.13.7"
       - run: uv sync --locked
-      - name: Run the notebook without preprocessing dependencies
+      - name: Run the notebook without the raw EEG (the cleaning demo is skipped)
         run: uv run --locked jupyter nbconvert --to notebook --execute ms2_data.ipynb --output executed.ipynb --output-dir .validation --ExecutePreprocessor.timeout=180
-      - name: Regenerate the visual walkthrough without preprocessing dependencies
-        run: uv run --locked python -m eeg_pipeline.explain
-      - run: uv sync --locked --extra preprocessing
-      - run: uv run --locked --extra preprocessing python -m pytest tests -q

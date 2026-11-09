@@ -1,6 +1,6 @@
 # Harmonic-EEG
 
-**[Open the visual walkthrough in your browser](https://html-preview.github.io/?url=https://github.com/davisbone/Harmonic-EEG/blob/ms2-full-draft/docs/explainer.html)** (works on phones)
+**[Open the visual walkthrough in your browser](https://html-preview.github.io/?url=https://github.com/davisbone/Harmonic-EEG/blob/ms2-lean/docs/explainer.html)** (works on phones)
 
 ## Set up the environment
 
@@ -31,45 +31,37 @@ uv run jupyter lab ms2_data.ipynb
 - **Adding a package:** run `uv add <package>`, then commit both `pyproject.toml` and `uv.lock`.
 - **Running things from the terminal:** prefix commands with `uv run`, for example `uv run jupyter lab`.
 
-## Explore the prepared data
+## What's here
 
-**Question:** Can 21 early EEG voltage features tell standard from deviant middle chords in participants the model was not trained on? For CS1090A Milestone 2, this repository builds and describes a table with one row per event to answer it. Each retained event has 21 EEG voltage features. The binary label pools the two deviant types, which remain identifiable in the `condition` column.
+**Question:** Can 21 early EEG voltage features tell standard from deviant middle chords in participants the model was not trained on?
 
-`ms2_data.ipynb` reads the bundled `results/` files and runs without a raw-data download or the optional preprocessing packages (`A1exploreData.ipynb` preserves earlier exploration of `participants.tsv`). It shows the current cohort, table schema, class balance, trial exclusions, and a worked voltage-feature example. The [visual walkthrough](docs/explainer.html) opens locally in a browser. The [methods](docs/methods.md) describe each processing step, what every column means, and the limits of what the table can show.
-
-| Bundled file | Contents |
+| File | Contents |
 | --- | --- |
-| `results/events.parquet` | One row per retained event with the fixed predictor columns and metadata |
-| `results/event_ledger.csv.gz` | One row per candidate event with eligibility, QC, and exclusion reasons |
-| `results/participant_audit.csv` | Source coverage, channel repairs, ICA decisions, and event counts by participant |
-| `results/example.npz` | A small set of waveform traces for the worked example |
-| `results/provenance.json` | Dataset version, runtime, settings, predictor names, cohort counts, and output hashes |
+| `ms2_data.ipynb` | The Milestone 2 notebook: getting the data, what a row means, each cleaning step demonstrated on one participant, and the refined question |
+| `preprocess.py` | All the EEG cleaning in one file (about 430 lines): raw recordings in, one row per middle chord out |
+| `data_manifest.json` | Every file in the NEMAR release with its size and download link |
+| `results/events.parquet` | The table: one row per retained event, 21 EEG features plus metadata |
+| `results/event_ledger.csv.gz` | All 57,600 candidate events, with the reason each was kept or removed |
+| `results/participant_audit.csv` | Per participant: recording coverage, bad electrodes, and event counts |
+| `A1exploreData.ipynb` | Earlier exploration of `participants.tsv` |
 
-To regenerate the visual guide from the bundled results, run `uv run python -m eeg_pipeline.explain`.
+The notebook runs without the raw EEG: it loads the table from `results/` (or from GitHub if only the notebook is downloaded). The [visual walkthrough](docs/explainer.html) and [methods](docs/methods.md) explain the processing in more detail.
 
-## Rebuild from raw EEG
+## Rebuild from raw EEG (optional)
 
-Use the pinned NEMAR `on003570` v1.0.0 release. The rebuild manifest covers about 39 GB of inputs. Reserve time for downloading, checksum validation, and sequential CPU processing. A full build can take hours. The notebook quickstart uses the prepared files above. [NEMAR dataset record](https://nemar.org/dataset/on003570)
+This downloads about 39 GB and takes roughly 75 minutes of processing. The `Data` folder is ignored by git.
 
 ```text
 uv sync --extra preprocessing
-uv run --extra preprocessing python -m eeg_pipeline download
-uv run --extra preprocessing python -m eeg_pipeline build
+uv run --extra preprocessing python -c "import preprocess; preprocess.download('Data/on003570')"
+uv run --extra preprocessing python preprocess.py Data/on003570 results
 ```
 
-The default input is `Data/on003570` and the default build destination is `results`. The `Data` folder is ignored by git, so the raw recordings never get committed. If you already have the release, point `build` at the directory containing `participants.tsv` and the `sub-*` folders. `download` uses the same `--data-dir` option and verifies files already there. Replace the example path with your own.
+To try one participant, download only its files and write to a separate folder:
 
 ```text
-uv run --extra preprocessing python -m eeg_pipeline build --data-dir "path/to/on003570"
+uv run --extra preprocessing python -c "import preprocess; preprocess.download('Data/on003570', ['sub-002'])"
+uv run --extra preprocessing python preprocess.py Data/on003570 Data/sub-002-results sub-002
 ```
-
-To verify source coverage without fitting ICA, run `uv run --extra preprocessing python -m eeg_pipeline audit` with the same input options. For a small rebuild, download just the selected participant files and use a separate output directory.
-
-```text
-uv run --extra preprocessing python -m eeg_pipeline download --subjects sub-002
-uv run --extra preprocessing python -m eeg_pipeline build --subjects sub-002 --output-dir Data/sub-002-results
-```
-
-Rerunning `build` reuses completed participants when the inputs, processing code and runtime still match. See the [reproduction notes](docs/methods.md#reproduction-and-inspection) if a crash leaves a build lock behind.
 
 The source release is CC0. Cite the [dataset](https://doi.org/10.82901/nemar.on003570) and the [original EEG paper](https://doi.org/10.1016/j.neuroimage.2021.118458) when using these data.
