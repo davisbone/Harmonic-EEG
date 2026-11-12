@@ -7,6 +7,7 @@ dependencies = [
     "jupyter>=1.1",
     "jupyterlab>=4",
     "matplotlib>=3.10",
+    "mne>=1.13.2",
     "nbconvert>=7",
     "nbformat>=5",
     "numpy>=2.3",
