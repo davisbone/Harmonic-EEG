@@ -1,6 +1,9 @@
 # "Data" Folder
 Data/
 
+# "Cleaned" Folder (cleaned trials saved by the notebook)
+Cleaned/
+
 # Mac .DS_Store
 .DS_Store
 
